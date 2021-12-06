@@ -1,0 +1,148 @@
+#	Maven & sql commands to test our proyect.
+#
+# cd $HOME/software/ws-app/ws-app-client
+#
+
+Functionality 1 (A1): addRace
+
+	Race 1:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'A Coruña' '10Km. Campus Elviña' '2021-08-15T11:00' 10 2"
+
+	Race 2:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'Santiago' '5Km. Plaza Obradoiro' '2021-08-25T11:00' 5 100"
+
+	Race 3:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'A Coruña' '7Km. Playa Riazor' '2021-10-15T11:00' 7 200"
+
+	Race 4:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'A Coruña' '20Km. Obelisco' '2021-10-25T11:00' 20 300"
+
+	Invalid sentences:
+
+	Creating a race with a past date (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'A Coruña' '10Km. Torre Hércules' '2020-08-14T11:00' 10 100"
+
+	Creating a race with a negative price (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'A Coruña' '10Km. Torre Hércules' '2021-08-14T11:00' -2 100"
+
+	Creating a race with max. participants <= 0 (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'A Coruña' '10Km. Torre Hércules' '2021-08-14T11:00' 10 0"
+
+	Creating a race with the field 'city' empty or null (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace ' ' '10Km. Torre Hércules' '2021-08-14T11:00' 10 100"
+
+	Creating a race with the field 'Description' empty (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-addRace 'A Coruña' ' ' '2021-08-14T11:00' 10 0"
+
+
+Update Sentences in BBDD:
+
+    From command line:
+    * mysql -u ws --password=ws ws -e "UPDATE Race SET raceDate='2020-11-25T10:00' WHERE raceId=4".
+
+    Manually:
+	* enter bbdd: mysql -u ws --password=ws ws.
+	* sql command: 'UPDATE Race SET raceDate='2020-11-25T10:00' WHERE raceId=4;'.
+
+
+Functionality 2 (A3): findRace:
+
+    Finds Race 2 and returns avaliable places:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRace 2"
+
+    Invalid sentences:
+
+	Does not find the Race 9 (throws InstanceNotFoundException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRace 9"
+
+
+Functionality 3 (A1): findRaces
+
+	Finds Race 1 and Race 3:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRaces '2021-12-15' 'A Coruña'"
+
+	Finds Race 1:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRaces '2021-08-31' 'A Coruña'"
+
+	Does not find any race:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRaces '2021-07-31' 'Santiago'"
+
+    Invalid sentences:
+
+	Finding races with date < now (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRaces '2020-06-24' 'Santiago'"
+
+	Finding races with field 'city' empty or null (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRaces '2021-08-31' ' '"
+
+	Looking for races with bad date (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRaces '20-08-31' 'A Coruña'"
+
+
+Functionality 4 (A2): addInscription
+
+	Making inscription 1 (User 1 and Race 1):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user1@udc.es' 1 '0123456789111111'"
+
+	Making inscription 2 (User 2 and Race 1):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user2@udc.es' 1 '0123456789222222'"
+
+	Making inscription 3 (User 2 and Race 2):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user2@udc.es' 2 '0123456789222222'"
+
+    Making inscription 4 (User 1 and Race 2):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user1@udc.es' 2 '0123456789111111'"
+
+
+	Invalid sentences:
+
+	No avaliable places into the race (throws MaxParticipantsException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user3@udc.es' 1 '0123456789333333'"
+
+	Inscription out of date (throws InscriptionOutOfTimeException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user3@udc.es' 4 '0123456789333333'"
+
+	User was already inscribed (throws AlreadyInscribedException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user1@udc.es' 2 '0123456789111111'"
+
+	Invalid mail (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user4' 2 '0123456789444444'"
+
+	Invalid credit card (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user4@udc.es' 2 '0123456789'"
+
+	Inscribe into a non existant race.(throws InstanceNotFoundException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-register 'user3@udc.es' 9 '0123456789444444'"
+
+
+Functionality 5 (A2): findInscription
+
+	Finds inscriptions 1 (dorsal 1) and 4 (dorsal 2):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRegisters 'user1@udc.es'"
+
+	Does not find any inscriptions:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRegisters 'user6@udc.es'"
+
+	Invalid sentences:
+
+	Email is not valid (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-findRegisters 'user1'"
+
+
+Functionality 6 (A3): MarkPickUp
+	Marks the pick-up for inscription 1:
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-deliverNumber 1 '0123456789111111'"
+
+	Invalid sentences:
+
+	Different credit card (throws AuthenticationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-deliverNumber 1 '0123456789222222'"
+
+	Dorsal already picked-up (throws AlreadyPickedUpException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-deliverNumber 1 '0123456789111111'"
+
+	Credit card is not valid (throws InputValidationException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-deliverNumber 1 '0123456789'"
+
+	Inscription does not exist (throws InstanceNotFoundException):
+	* mvn exec:java -Dexec.mainClass="es.udc.isd032.races.client.ui.RaceServiceClient" -Dexec.args="-deliverNumber 9 '0123456789111111'"
